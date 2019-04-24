@@ -41,7 +41,7 @@ fn main() -> std::io::Result<()> {
             smallest_range = f_high_temp - f_low_temp;
         }  
     }
-    println!("day number w/ smallest spread is {}", smallest_day);           
+    println!("first day number w/ smallest spread is {}", smallest_day);           
     Ok(())
 }
 

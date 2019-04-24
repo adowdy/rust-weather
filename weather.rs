@@ -1,6 +1,5 @@
 /* 
 In weather.dat you’ll find daily weather data for Morristown, NJ for June 2002. 
-
 Download this text file, then write a program to output the day number 
 (column one) with the smallest temperature spread 
 (the maximum temperature is the second column, the minimum the third column).
@@ -11,46 +10,38 @@ http://codekata.com/data/04/weather.dat
 use std::fs::File;
 use std::io::BufReader;
 use std::io::BufRead;
-// use std::path::Path;
-
-struct Day {
-    dayNum: i32,
-    minTemp: i32,
-    maxTemp: i32,
-}
 
 fn strip_characters(original : &str, to_strip : &str) -> String {
     original.chars().filter(|&c| !to_strip.contains(c)).collect()
 }
 
-
 fn main() -> std::io::Result<()> {
-    // let mut file = File::open("weather.dat")?;
-    // let mut contents = String::new();
-    // file.read_to_string(&mut contents)?;
 
-    //let mut stringVec = Vec::new();
+    // LEARN -- .to_string is doing explicit allocation
+    // we need this because later we will assign into this
+    let mut smallest_day = "".to_string();
+    let mut smallest_range = 1000.0;
 
     let f = try!(File::open("weather.dat"));
     let file = BufReader::new(&f);
     for line in file.lines() {
-        let l = line.unwrap();
-        let mut linewords_iter = l.split_whitespace(); 
-        if linewords_iter.next() == Some("Dy")  {
-            println!("line found that we don't want, skip");
-            continue; 
-        }
-        if linewor
-        // want first 3 of each line
-        //stringVec.push(l);
-        //println!("{}", l); 
-        
-    }           
+        let mut unwrapline = line.unwrap();
+        let mut linewords: Vec<_> = unwrapline.split_whitespace().collect(); 
+        if linewords.len() == 0 { print!("skip line\n"); continue; }
+        if linewords.contains(&"Dy") { print!("skip line\n"); continue; }
 
-    
+        let day = linewords[0].to_string();
+        let s_high_temp = strip_characters(linewords[1], "*").to_string();
+        let f_high_temp = s_high_temp.parse::<f64>().unwrap();
+        let s_low_temp = strip_characters(linewords[2], "*").to_string();
+        let f_low_temp = s_low_temp.parse::<f64>().unwrap();
 
-    // take max - min = spread
-    // day with smallest spread... print dy number
+        if (f_high_temp - f_low_temp) < smallest_range {
+            smallest_day = day;
+            smallest_range = f_high_temp - f_low_temp;
+        }  
+    }
+    println!("day number w/ smallest spread is {}", smallest_day);           
     Ok(())
 }
 
